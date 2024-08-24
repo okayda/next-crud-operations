@@ -42,7 +42,7 @@ export default function RootLayout({
               <Navigation />
             </header>
 
-            <main>{children}</main>
+            <main className="container mx-auto mt-20">{children}</main>
           </ThemeProvider>
         </body>
       </html>
