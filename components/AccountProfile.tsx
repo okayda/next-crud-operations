@@ -1,14 +1,15 @@
 "use client";
-import { ChangeEvent, useState } from "react";
-import Image from "next/image";
 
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UserValidation } from "@/lib/validations/user";
+import { ChangeEvent, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 import * as z from "zod";
 
-import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { UserValidation } from "@/lib/schema/user";
+
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -17,13 +18,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "../ui/textarea";
-import { isBase64Image } from "@/lib/utils";
-import { useUploadThing } from "@/lib/uploadthing";
-import { updateUser } from "@/lib/actions/user.actions";
-import { usePathname, useRouter } from "next/navigation";
+import { Textarea } from "./ui/textarea";
+import { Button } from "@/components/ui/button";
 
-interface Props {
+import { isBase64Image } from "@/lib/utils";
+import { useUploadThing } from "@/lib/uploadThing";
+import { updateUser } from "@/lib/actions/user.actions";
+
+type Props = {
   user: {
     id: string;
     objectId: string;
@@ -32,7 +34,7 @@ interface Props {
     bio: string;
     image: string;
   };
-}
+};
 
 const AccountProfile = ({ user }: Props) => {
   // allowing a user to upload a profile picture
@@ -45,6 +47,13 @@ const AccountProfile = ({ user }: Props) => {
 
   const form = useForm<z.infer<typeof UserValidation>>({
     resolver: zodResolver(UserValidation),
+
+    defaultValues: {
+      profile_photo: user?.image ? user.image : "",
+      name: user?.name ? user.name : "",
+      username: user?.username ? user.username : "",
+      bio: user?.bio ? user.bio : "",
+    },
   });
 
   const handleImage = function (

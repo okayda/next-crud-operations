@@ -1,3 +1,3 @@
 export default function page() {
-  return <div>OnBoarding</div>;
+  return <section></section>;
 }
