@@ -18,9 +18,4 @@ export const navigation = [
     label: "Profile",
     route: "/profile",
   },
-
-  {
-    label: "Onboarding",
-    route: "/onboarding",
-  },
 ];

@@ -1,7 +1,21 @@
+"use server";
+
 import { revalidatePath } from "next/cache";
 
 import { connectToDB } from "../database/mongoose";
 import User from "../models/user.model";
+
+export async function fetchUser(userId: string) {
+  try {
+    await connectToDB();
+
+    const user = await User.findOne({ id: userId });
+
+    return user;
+  } catch (error: any) {
+    throw new Error(`Failed to fetch user: ${error.message}`);
+  }
+}
 
 type Params = {
   userId: string;
@@ -12,7 +26,7 @@ type Params = {
   path: string;
 };
 
-export async function updateUser({
+export async function upsertUser({
   userId,
   bio,
   name,
@@ -21,7 +35,7 @@ export async function updateUser({
   image,
 }: Params): Promise<void> {
   try {
-    connectToDB();
+    await connectToDB();
 
     await User.findOneAndUpdate(
       { id: userId },

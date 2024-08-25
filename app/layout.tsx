@@ -42,7 +42,9 @@ export default function RootLayout({
               <Navigation />
             </header>
 
-            <main className="container mx-auto mt-20">{children}</main>
+            <main className="container mx-auto my-16 px-3 md:px-8">
+              {children}
+            </main>
           </ThemeProvider>
         </body>
       </html>
