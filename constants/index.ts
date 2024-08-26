@@ -5,6 +5,11 @@ export const navigation = [
   },
 
   {
+    label: "Create Post",
+    route: "/create-post",
+  },
+
+  {
     label: "Search",
     route: "/search",
   },
