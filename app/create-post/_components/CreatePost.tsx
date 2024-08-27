@@ -38,8 +38,6 @@ export default function CreatePost({ userId }: { userId: string }) {
       path: pathname,
     });
 
-    form.reset();
-
     router.push("/");
   };
 
