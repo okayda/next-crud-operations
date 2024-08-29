@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   image: String,
   bio: String,
+  bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   onboarded: { type: Boolean, default: false },
 });
