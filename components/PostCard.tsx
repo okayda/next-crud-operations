@@ -1,15 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Card } from "./ui/card";
+
 import DeletePost from "./DeletePost";
+import { Card } from "./ui/card";
+import { buttonVariants } from "./ui/button";
+import Bookmark from "./Bookmark";
+import { cn } from "@/lib/utils";
 
 type Props = {
   id: string;
   content: string;
   author: {
+    _id?: string;
+    id: string;
     name: string;
     image: string;
-    id: string;
   };
   comments: {
     author: {
@@ -57,22 +62,24 @@ export default function PostCard({
 
             <div className="mt-5 flex flex-col gap-3">
               <div className="flex gap-3.5">
-                <Link href={`/post/${id}`}>
+                <Link
+                  href={`/post/${id}`}
+                  className={cn(
+                    buttonVariants({ variant: "secondary" }),
+                    "size-[24px] p-0",
+                  )}
+                >
                   <Image
                     src="/assets/reply.svg"
                     alt=""
                     width={24}
                     height={24}
-                    className="cursor-pointer object-contain"
                   />
                 </Link>
 
-                <Image
-                  src="/assets/bookmark.svg"
-                  alt=""
-                  width={20}
-                  height={20}
-                  className="cursor-pointer object-contain"
+                <Bookmark
+                  userId={JSON.stringify(author._id)}
+                  postId={JSON.stringify(id)}
                 />
               </div>
 

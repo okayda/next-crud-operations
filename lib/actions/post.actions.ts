@@ -147,6 +147,46 @@ export async function addCommentToPost(
   }
 }
 
+export async function fetchBookmarks(userId: string): Promise<any[]> {
+  await connectToDB();
+
+  const user = await User.findById(userId).populate("bookmarks").exec();
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user.bookmarks;
+}
+
+export async function addBookmark(
+  userId: string,
+  postId: string,
+  path: string,
+) {
+  await connectToDB();
+
+  await User.findByIdAndUpdate(userId, {
+    $addToSet: { bookmarks: postId },
+  });
+
+  revalidatePath(path);
+}
+
+export async function deleteBookmark(
+  userId: string,
+  postId: string,
+  path: string,
+) {
+  await connectToDB();
+
+  await User.findByIdAndUpdate(userId, {
+    $pull: { bookmarks: postId },
+  });
+
+  revalidatePath(path);
+}
+
 async function fetchAllChildPosts(postId: string): Promise<any[]> {
   const childPosts = await Post.find({ parentId: postId });
 
