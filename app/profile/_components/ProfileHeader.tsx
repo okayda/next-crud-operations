@@ -40,7 +40,10 @@ export default function ProfileHeader({ name, username, imgUrl, bio }: Props) {
 
         <Link
           href={`${pathname}/change`}
-          className={cn(buttonVariants({ variant: "outline" }))}
+          className={cn(
+            "!font-semibold",
+            buttonVariants({ variant: "secondary" }),
+          )}
         >
           Change
         </Link>

@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, useState } from "react";
+import { revalidatePath } from "next/cache";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import * as z from "zod";
@@ -104,7 +105,6 @@ const AccountProfile = ({ user }: Props) => {
 
     if (pathname.split("/").includes("change")) {
       router.back();
-      router.refresh();
     } else {
       router.push("/");
     }

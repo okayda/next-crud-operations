@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Card } from "./ui/card";
+import DeletePost from "./DeletePost";
 
 type Props = {
   id: string;
@@ -43,23 +44,19 @@ export default function PostCard({
           </div>
 
           <div className="flex w-full flex-col">
-            <Link href={`/profile/${author.id}`} className="w-fit">
-              <h4 className="text-base-semibold text-light-1 cursor-pointer">
-                {author.name}
-              </h4>
-            </Link>
+            <div className="flex justify-between">
+              <Link href={`/profile/${author.id}`} className="w-fit">
+                <h4 className="text-base-semibold text-light-1 cursor-pointer">
+                  {author.name}
+                </h4>
+              </Link>
+
+              <DeletePost postId={JSON.stringify(id)} />
+            </div>
             <p className="text-small-regular text-light-2 mt-2">{content}</p>
 
             <div className="mt-5 flex flex-col gap-3">
               <div className="flex gap-3.5">
-                <Image
-                  src="/assets/heart-gray.svg"
-                  alt=""
-                  width={24}
-                  height={24}
-                  className="cursor-pointer object-contain"
-                />
-
                 <Link href={`/post/${id}`}>
                   <Image
                     src="/assets/reply.svg"

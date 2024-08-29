@@ -146,3 +146,65 @@ export async function addCommentToPost(
     throw new Error("Unable to add comment");
   }
 }
+
+async function fetchAllChildPosts(postId: string): Promise<any[]> {
+  const childPosts = await Post.find({ parentId: postId });
+
+  const descendantPosts = [];
+  for (const childPost of childPosts) {
+    const descendants = await fetchAllChildPosts(childPost._id);
+    descendantPosts.push(childPost, ...descendants);
+  }
+
+  return descendantPosts;
+}
+
+export async function deleteParentPost(
+  id: string,
+  path: string,
+): Promise<void> {
+  try {
+    await connectToDB();
+
+    const mainPost = await Post.findById(id);
+
+    if (!mainPost) {
+      throw new Error("Parent Post not found");
+    }
+
+    // Fetch all child post and their descendants recursively
+    const descendantPosts = await fetchAllChildPosts(id);
+
+    // Get all descendant post IDs including the main post ID and child post IDs
+    const descendantPostIds = [id, ...descendantPosts.map((post) => post._id)];
+
+    // Extract the authorIds to update User models respectively
+    const uniqueAuthorIds = new Set(
+      [
+        ...descendantPosts.map((post) => post.author?._id?.toString()),
+        mainPost.author?._id?.toString(),
+      ].filter((id) => id !== undefined),
+    );
+
+    // Recursively delete child post and their descendants
+    await Post.deleteMany({ _id: { $in: descendantPostIds } });
+
+    // Update User model
+    await User.updateMany(
+      { _id: { $in: Array.from(uniqueAuthorIds) } },
+      { $pull: { posts: { $in: descendantPostIds } } },
+    );
+
+    revalidatePath(path);
+  } catch (error: any) {
+    throw new Error(`Failed to delete post: ${error.message}`);
+  }
+}
+
+export async function deleteChildPost(id: string, path: string): Promise<void> {
+  await connectToDB();
+
+  await Post.deleteOne({ _id: id });
+
+  revalidatePath(path);
+}

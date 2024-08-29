@@ -10,16 +10,6 @@ export const navigation = [
   },
 
   {
-    label: "Search",
-    route: "/search",
-  },
-
-  {
-    label: "Activity",
-    route: "/activity",
-  },
-
-  {
     label: "Profile",
     route: "/profile",
   },

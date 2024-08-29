@@ -1,8 +1,19 @@
-import PostCard from "@/components/PostCard";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+
 import { fetchPosts } from "@/lib/actions/post.actions";
+import { fetchUser } from "@/lib/actions/user.actions";
+
+import PostCard from "@/components/PostCard";
 
 export default async function AsyncPost() {
   const result = await fetchPosts(1, 30);
+
+  const user = await currentUser();
+  if (!user) return null;
+
+  const userInfo = await fetchUser(user.id);
+  if (!userInfo?.onboarded) redirect("/onboarding");
 
   return (
     <>
