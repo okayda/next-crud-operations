@@ -27,7 +27,9 @@ export default async function AsyncPost() {
               id={post._id}
               content={post.text}
               author={post.author}
+              createdAt={post.createdAt}
               comments={post.children}
+              isComment
             />
           ))}
         </>

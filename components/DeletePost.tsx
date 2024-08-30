@@ -22,8 +22,8 @@ export default function DeletePost({
 
   return (
     <Button
-      variant="outline"
-      className="px-3"
+      variant="default"
+      className="size-[32px] p-0"
       disabled={isDeleting}
       onClick={async () => {
         setIsDeleting(true);
@@ -38,9 +38,9 @@ export default function DeletePost({
       }}
     >
       {isDeleting ? (
-        <Loader2 width={18} height={18} className="animate-spin" />
+        <Loader2 width={16} height={16} className="animate-spin" />
       ) : (
-        <Trash width={18} height={18} />
+        <Trash width={16} height={16} />
       )}
     </Button>
   );

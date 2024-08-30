@@ -5,22 +5,27 @@ import DeletePost from "./DeletePost";
 import { Card } from "./ui/card";
 import { buttonVariants } from "./ui/button";
 import Bookmark from "./Bookmark";
-import { cn } from "@/lib/utils";
+import { cn, formatDateString } from "@/lib/utils";
 
 type Props = {
   id: string;
   content: string;
+
   author: {
     _id?: string;
     id: string;
     name: string;
     image: string;
   };
+
+  createdAt: string;
+
   comments: {
     author: {
       image: string;
     };
   }[];
+
   isComment?: boolean;
 };
 
@@ -28,71 +33,82 @@ export default function PostCard({
   id,
   content,
   author,
+  createdAt,
   comments,
   isComment,
 }: Props) {
   return (
-    <Card className="flex w-full flex-col rounded-xl p-6">
+    <Card className="rounded-md p-6">
       <div className="flex items-center justify-between">
-        <div className="flex w-full flex-1 flex-row gap-4">
-          <div className="flex flex-col items-center">
-            <Link href={`/profile/${author.id}`} className="relative h-11 w-11">
-              <Image
-                src={author.image}
-                alt="Profile Image"
-                fill
-                className="cursor-pointer rounded-full"
-              />
-            </Link>
+        <div className="flex items-center gap-4">
+          <Link href={`/profile/${author.id}`}>
+            <Image
+              src={author.image}
+              alt="Profile Image"
+              width={52}
+              height={52}
+              className="cursor-pointer rounded-full"
+            />
+          </Link>
 
-            <div className="post-card_bar" />
-          </div>
-
-          <div className="flex w-full flex-col">
-            <div className="flex justify-between">
-              <Link href={`/profile/${author.id}`} className="w-fit">
-                <h4 className="text-base-semibold text-light-1 cursor-pointer">
-                  {author.name}
-                </h4>
-              </Link>
-
-              <DeletePost postId={JSON.stringify(id)} />
-            </div>
-            <p className="text-small-regular text-light-2 mt-2">{content}</p>
-
-            <div className="mt-5 flex flex-col gap-3">
-              <div className="flex gap-3.5">
-                <Link
-                  href={`/post/${id}`}
-                  className={cn(
-                    buttonVariants({ variant: "secondary" }),
-                    "size-[24px] p-0",
-                  )}
-                >
-                  <Image
-                    src="/assets/reply.svg"
-                    alt=""
-                    width={24}
-                    height={24}
-                  />
-                </Link>
-
-                <Bookmark
-                  userId={JSON.stringify(author._id)}
-                  postId={JSON.stringify(id)}
-                />
-              </div>
-
-              {isComment && comments.length > 0 && (
-                <Link href={`/post/${id}`}>
-                  <p className="text-subtle-medium text-gray-1 mt-1">
-                    {comments.length} replies
-                  </p>
-                </Link>
-              )}
-            </div>
-          </div>
+          <Link href={`/profile/${author.id}`}>
+            <h4 className="cursor-pointer text-[18px] font-semibold">
+              {author.name}
+            </h4>
+          </Link>
         </div>
+
+        <DeletePost postId={JSON.stringify(id)} />
+      </div>
+
+      <p className="text-small-regular text-light-2 mt-4 border-l-4 pl-4">
+        {content}
+      </p>
+
+      <div className="mt-5 flex flex-col gap-3">
+        <div className="flex gap-3">
+          <Link
+            href={`/post/${id}`}
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "size-[24px] p-0",
+            )}
+          >
+            <Image src="/assets/reply.svg" alt="" width={24} height={24} />
+          </Link>
+
+          <Bookmark
+            userId={JSON.stringify(author._id)}
+            postId={JSON.stringify(id)}
+          />
+        </div>
+
+        {isComment && comments.length > 0 && (
+          <div className="mb-1 flex items-center gap-2">
+            {comments.slice(0, 2).map((comment, index) => (
+              <Image
+                key={index}
+                src={comment.author.image}
+                alt={`user_${index}`}
+                width={22}
+                height={22}
+                className={`${
+                  index !== 0 && "-ml-5"
+                } rounded-full object-cover`}
+              />
+            ))}
+
+            <Link href={`/post/${id}`}>
+              <p className="text-sm font-semibold text-muted-foreground">
+                {comments.length} repl{comments.length > 1 ? "ies" : "y"}
+              </p>
+            </Link>
+          </div>
+        )}
+
+        <p className="text-xs text-muted-foreground">
+          {formatDateString(createdAt)}
+        </p>
       </div>
     </Card>
   );

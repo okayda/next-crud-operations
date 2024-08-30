@@ -24,7 +24,7 @@ export default function Bookmark({
 
   return (
     <Button
-      variant="secondary"
+      variant="outline"
       className="size-[24px] p-0"
       disabled={isBookmarking}
       onClick={async () => {

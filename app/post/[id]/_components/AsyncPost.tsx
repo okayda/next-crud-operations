@@ -24,6 +24,7 @@ export default async function AsyncPost({ postId }: { postId: string }) {
         id={post._id}
         content={post.text}
         author={post.author}
+        createdAt={post.createdAt}
         comments={post.children}
       />
 
@@ -42,6 +43,7 @@ export default async function AsyncPost({ postId }: { postId: string }) {
             id={childItem._id}
             content={childItem.text}
             author={childItem.author}
+            createdAt={childItem.createdAt}
             comments={childItem.children}
             isComment
           />
