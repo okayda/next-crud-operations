@@ -1,7 +1,11 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-import { fetchPosts } from "@/lib/actions/post.actions";
+import {
+  fetchPosts,
+  checkBookmark,
+  FetchPostByIdReturnType,
+} from "@/lib/actions/post.actions";
 import { fetchUser } from "@/lib/actions/user.actions";
 
 import PostCard from "@/components/PostCard";
@@ -21,17 +25,22 @@ export default async function AsyncPost() {
         <p className="text-xl tracking-wide">No Posts found</p>
       ) : (
         <>
-          {result.posts.map((post) => (
-            <PostCard
-              key={post._id}
-              id={post._id}
-              content={post.text}
-              author={post.author}
-              createdAt={post.createdAt}
-              comments={post.children}
-              isComment
-            />
-          ))}
+          {result.posts.map(async (post) => {
+            const parentPostBookmark = await checkBookmark(post);
+
+            return (
+              <PostCard
+                key={post._id}
+                postId={post._id}
+                isBookmark={parentPostBookmark}
+                content={post.text}
+                author={post.author}
+                createdAt={post.createdAt}
+                comments={post.children}
+                isComment
+              />
+            );
+          })}
         </>
       )}
     </>

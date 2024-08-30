@@ -1,7 +1,11 @@
 import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
 
-import { fetchPostById } from "@/lib/actions/post.actions";
+import {
+  fetchPostById,
+  checkBookmark,
+  FetchPostByIdReturnType,
+} from "@/lib/actions/post.actions";
 import { fetchUser } from "@/lib/actions/user.actions";
 import Comment from "@/components/Comment";
 import PostCard from "@/components/PostCard";
@@ -17,11 +21,14 @@ export default async function AsyncPost({ postId }: { postId: string }) {
 
   const post = await fetchPostById(postId);
 
+  const parentPostBookmark = await checkBookmark(post);
+
   return (
     <>
       <PostCard
         key={post._id}
-        id={post._id}
+        postId={post._id}
+        isBookmark={parentPostBookmark}
         content={post.text}
         author={post.author}
         createdAt={post.createdAt}
@@ -37,17 +44,22 @@ export default async function AsyncPost({ postId }: { postId: string }) {
       </div>
 
       <div className="mt-8 flex flex-col gap-8">
-        {post.children.map((childItem: any) => (
-          <PostCard
-            key={childItem._id}
-            id={childItem._id}
-            content={childItem.text}
-            author={childItem.author}
-            createdAt={childItem.createdAt}
-            comments={childItem.children}
-            isComment
-          />
-        ))}
+        {post.children.map(async (childPost: FetchPostByIdReturnType) => {
+          const childPostBookmark = await checkBookmark(childPost);
+
+          return (
+            <PostCard
+              key={childPost._id}
+              postId={childPost._id}
+              isBookmark={childPostBookmark}
+              content={childPost.text}
+              author={childPost.author}
+              createdAt={childPost.createdAt}
+              comments={childPost.children}
+              isComment
+            />
+          );
+        })}
       </div>
     </>
   );

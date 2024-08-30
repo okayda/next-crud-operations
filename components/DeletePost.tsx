@@ -13,7 +13,7 @@ export default function DeletePost({
   postId: string;
   isComment?: string;
 }) {
-  const id = JSON.parse(postId);
+  const postIdStr = JSON.parse(postId);
 
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -28,11 +28,11 @@ export default function DeletePost({
       onClick={async () => {
         setIsDeleting(true);
         if (!isComment) {
-          await deleteParentPost(id, pathname);
+          await deleteParentPost(postIdStr, pathname);
 
           if (pathname.split("/").includes("post")) router.push("/");
         } else {
-          await deleteChildPost(id, pathname);
+          await deleteChildPost(postIdStr, pathname);
         }
         setIsDeleting(false);
       }}

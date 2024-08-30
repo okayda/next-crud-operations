@@ -8,7 +8,8 @@ import Bookmark from "./Bookmark";
 import { cn, formatDateString } from "@/lib/utils";
 
 type Props = {
-  id: string;
+  postId: string;
+  isBookmark: boolean;
   content: string;
 
   author: {
@@ -30,7 +31,8 @@ type Props = {
 };
 
 export default function PostCard({
-  id,
+  postId,
+  isBookmark,
   content,
   author,
   createdAt,
@@ -58,7 +60,7 @@ export default function PostCard({
           </Link>
         </div>
 
-        <DeletePost postId={JSON.stringify(id)} />
+        <DeletePost postId={JSON.stringify(postId)} />
       </div>
 
       <p className="text-small-regular text-light-2 mt-4 border-l-4 pl-4">
@@ -68,7 +70,7 @@ export default function PostCard({
       <div className="mt-5 flex flex-col gap-3">
         <div className="flex gap-3">
           <Link
-            href={`/post/${id}`}
+            href={`/post/${postId}`}
             className={cn(
               buttonVariants({ variant: "outline" }),
               "size-[24px] p-0",
@@ -78,8 +80,9 @@ export default function PostCard({
           </Link>
 
           <Bookmark
+            isBookmark={isBookmark}
             userId={JSON.stringify(author._id)}
-            postId={JSON.stringify(id)}
+            postId={JSON.stringify(postId)}
           />
         </div>
 
@@ -98,7 +101,7 @@ export default function PostCard({
               />
             ))}
 
-            <Link href={`/post/${id}`}>
+            <Link href={`/post/${postId}`}>
               <p className="text-sm font-semibold text-muted-foreground">
                 {comments.length} repl{comments.length > 1 ? "ies" : "y"}
               </p>
