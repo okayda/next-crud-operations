@@ -55,7 +55,7 @@ export default function Comment({
       <form
         autoComplete="off"
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mt-10 flex items-center gap-4 border-y border-border py-5"
+        className="flex items-center gap-4 border-y border-border py-5"
       >
         <FormField
           control={form.control}
@@ -72,10 +72,10 @@ export default function Comment({
                 />
               </FormLabel>
 
-              <FormControl className="border-none bg-transparent">
+              <FormControl className="!mt-0 border-none bg-transparent">
                 <Input
                   type="text"
-                  placeholder="Make a comment"
+                  placeholder="Your comment..."
                   {...field}
                   className="outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
                 />

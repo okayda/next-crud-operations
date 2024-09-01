@@ -35,7 +35,7 @@ export default async function AsyncPost({ postId }: { postId: string }) {
         comments={post.children}
       />
 
-      <div className="mt-6">
+      <div className="mt-12">
         <Comment
           postId={post.id}
           currentUserImg={userInfo.image}

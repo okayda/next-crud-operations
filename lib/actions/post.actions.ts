@@ -155,7 +155,39 @@ export async function addCommentToPost(
 export async function fetchBookmarks(userId: string) {
   await connectToDB();
 
-  const user = await User.findById(userId).populate("bookmarks").exec();
+  const user = await User.findById(userId)
+    .populate({
+      path: "bookmarks",
+      options: { sort: { _id: -1 } },
+      populate: [
+        {
+          path: "author",
+          model: User,
+          select: "_id id name parentId image",
+        },
+
+        {
+          path: "children",
+          populate: [
+            {
+              path: "author",
+              model: User,
+              select: "_id id name parentId image",
+            },
+            {
+              path: "children",
+              model: Post,
+              populate: {
+                path: "author",
+                model: User,
+                select: "_id id name parentId image",
+              },
+            },
+          ],
+        },
+      ],
+    })
+    .exec();
 
   if (!user) {
     throw new Error("User not found");
@@ -163,6 +195,10 @@ export async function fetchBookmarks(userId: string) {
 
   return user.bookmarks;
 }
+
+export type FetchBookmarksReturnType = Awaited<
+  ReturnType<typeof fetchBookmarks>
+>;
 
 export async function addBookmark(
   userId: string,

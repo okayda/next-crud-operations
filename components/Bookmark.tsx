@@ -18,7 +18,6 @@ export default function Bookmark({
   postId: string;
 }) {
   const pathname = usePathname();
-  const [isBookmarked, setIsBookmarked] = useState(isBookmark);
   const [isBookmarking, setIsBookmarking] = useState(false);
 
   const parseUserId = JSON.parse(userId);
@@ -32,12 +31,10 @@ export default function Bookmark({
       onClick={async () => {
         setIsBookmarking(true);
 
-        if (isBookmarked) {
+        if (isBookmark) {
           await deleteBookmark(parseUserId, parsePostId, pathname);
-          setIsBookmarked(false);
         } else {
           await addBookmark(parseUserId, parsePostId, pathname);
-          setIsBookmarked(true);
         }
 
         setIsBookmarking(false);
@@ -45,7 +42,7 @@ export default function Bookmark({
     >
       {isBookmarking ? (
         <Loader2 width={16} height={16} className="animate-spin" />
-      ) : isBookmarked ? (
+      ) : isBookmark ? (
         <BookmarkCheck width={20} height={20} />
       ) : (
         <Image src="/assets/bookmark.svg" alt="" width={20} height={20} />
