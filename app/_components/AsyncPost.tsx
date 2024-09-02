@@ -1,11 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-import {
-  fetchPosts,
-  checkBookmark,
-  FetchPostByIdReturnType,
-} from "@/lib/actions/post.actions";
+import { fetchPosts, checkBookmark } from "@/lib/actions/post.actions";
 import { fetchUser } from "@/lib/actions/user.actions";
 
 import PostCard from "@/components/PostCard";

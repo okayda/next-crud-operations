@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 
 import mongoose from "mongoose";
 import { connectToDB } from "../database/mongoose";
-
 import User from "../models/user.model";
 import Post from "../models/post.model";
 
@@ -34,6 +33,42 @@ export async function createPost({ text, author, path }: Params) {
   } catch (error: any) {
     throw new Error(`Failed to create post: ${error.message}`);
   }
+}
+
+export async function fetchPosts(pageNumber = 1, pageSize = 20) {
+  await connectToDB();
+
+  // Calculate the number of posts to skip based on the page number and page size.
+  const skipAmount = (pageNumber - 1) * pageSize;
+
+  // Create a query to fetch the posts that have no parent (top-level posts) (a post that is not a comment/reply).
+  const postsQuery = Post.find({ parentId: { $in: [null, undefined] } })
+    .sort({ createdAt: "desc" })
+    .skip(skipAmount)
+    .limit(pageSize)
+    .populate({
+      path: "author",
+      model: User,
+    })
+    .populate({
+      path: "children", // Populate the children field
+      populate: {
+        path: "author", // Populate the author field within children
+        model: User,
+        select: "_id name parentId image", // Select only _id and username fields of the author
+      },
+    });
+
+  // Count the total number of top-level posts i.e., posts that are not comments.
+  const totalPostsCount = await Post.countDocuments({
+    parentId: { $in: [null, undefined] },
+  }); // Get the total count of posts
+
+  const posts = await postsQuery.exec();
+
+  const isNext = totalPostsCount > skipAmount + posts.length;
+
+  return { posts, isNext };
 }
 
 export async function fetchPostById(postId: string) {
@@ -76,42 +111,6 @@ export async function fetchPostById(postId: string) {
 }
 
 export type FetchPostByIdReturnType = Awaited<ReturnType<typeof fetchPostById>>;
-
-export async function fetchPosts(pageNumber = 1, pageSize = 20) {
-  await connectToDB();
-
-  // Calculate the number of posts to skip based on the page number and page size.
-  const skipAmount = (pageNumber - 1) * pageSize;
-
-  // Create a query to fetch the posts that have no parent (top-level posts) (a post that is not a comment/reply).
-  const postsQuery = Post.find({ parentId: { $in: [null, undefined] } })
-    .sort({ createdAt: "desc" })
-    .skip(skipAmount)
-    .limit(pageSize)
-    .populate({
-      path: "author",
-      model: User,
-    })
-    .populate({
-      path: "children", // Populate the children field
-      populate: {
-        path: "author", // Populate the author field within children
-        model: User,
-        select: "_id name parentId image", // Select only _id and username fields of the author
-      },
-    });
-
-  // Count the total number of top-level posts i.e., posts that are not comments.
-  const totalPostsCount = await Post.countDocuments({
-    parentId: { $in: [null, undefined] },
-  }); // Get the total count of posts
-
-  const posts = await postsQuery.exec();
-
-  const isNext = totalPostsCount > skipAmount + posts.length;
-
-  return { posts, isNext };
-}
 
 export async function addCommentToPost(
   postId: string,
@@ -228,28 +227,25 @@ export async function deleteBookmark(
   revalidatePath(path);
 }
 
-async function isBookmark(userId: string, postId: string) {
+export async function checkBookmark(post: FetchPostByIdReturnType) {
   await connectToDB();
 
-  const user = await User.findById(userId).select("bookmarks").exec();
+  const jsonUserId = JSON.stringify(post.author._id);
+  const jsonPostId = JSON.stringify(post._id);
+
+  const parseUserId = JSON.parse(jsonUserId);
+  const parsePostId = JSON.parse(jsonPostId);
+
+  const user = await User.findById(parseUserId).select("bookmarks").exec();
 
   if (!user) {
     throw new Error("User not found");
   }
 
-  const isBookmarked = user.bookmarks.includes(
-    new mongoose.Types.ObjectId(postId),
-  );
+  const isBookmarked = user.bookmarks.includes(parsePostId);
 
   return isBookmarked;
 }
-
-export const checkBookmark = async function (post: FetchPostByIdReturnType) {
-  const jsonPostId = JSON.stringify(post._id);
-  const jsonUserId = JSON.stringify(post.author._id);
-
-  return await isBookmark(JSON.parse(jsonUserId), JSON.parse(jsonPostId));
-};
 
 async function fetchAllChildPosts(postId: string): Promise<any[]> {
   const childPosts = await Post.find({ parentId: postId });
@@ -263,6 +259,7 @@ async function fetchAllChildPosts(postId: string): Promise<any[]> {
   return descendantPosts;
 }
 
+// Deleting the target post including the descendant post
 export async function deleteParentPost(
   postId: string,
   path: string,
@@ -302,12 +299,19 @@ export async function deleteParentPost(
       { $pull: { posts: { $in: descendantPostIds } } },
     );
 
+    // Remove deleted posts from the user's bookmarks array
+    await User.updateMany(
+      { bookmarks: { $in: descendantPostIds } },
+      { $pull: { bookmarks: { $in: descendantPostIds } } },
+    );
+
     revalidatePath(path);
   } catch (error: any) {
     throw new Error(`Failed to delete post: ${error.message}`);
   }
 }
 
+// Deleting the target post only
 export async function deleteChildPost(
   postId: string,
   path: string,

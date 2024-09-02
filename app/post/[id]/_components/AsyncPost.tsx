@@ -43,6 +43,7 @@ export default async function AsyncPost({ postId }: { postId: string }) {
         />
       </div>
 
+      {/* Only for current User but if the current user view different user will not be shown */}
       <div className="mt-8 flex flex-col gap-8">
         {post.children.map(async (childPost: FetchPostByIdReturnType) => {
           const childPostBookmark = await checkBookmark(childPost);

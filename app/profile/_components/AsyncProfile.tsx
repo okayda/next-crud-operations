@@ -4,7 +4,6 @@ import { currentUser } from "@clerk/nextjs/server";
 import { fetchUser } from "@/lib/actions/user.actions";
 import ProfileHeader from "./ProfileHeader";
 import {
-  checkBookmark,
   fetchBookmarks,
   FetchBookmarksReturnType,
 } from "@/lib/actions/post.actions";

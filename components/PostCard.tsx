@@ -60,7 +60,11 @@ export default function PostCard({
           </Link>
         </div>
 
-        <DeletePost postId={JSON.stringify(postId)} />
+        <DeletePost
+          isBookmark={isBookmark}
+          userId={JSON.stringify(author._id)}
+          postId={JSON.stringify(postId)}
+        />
       </div>
 
       <p className="text-small-regular text-light-2 mt-4 border-l-4 pl-4">
