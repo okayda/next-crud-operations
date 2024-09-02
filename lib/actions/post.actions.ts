@@ -259,8 +259,9 @@ async function fetchAllChildPosts(postId: string): Promise<any[]> {
   return descendantPosts;
 }
 
-// Deleting the target post including the descendant post
+// Deleting the target post including the descendants post
 export async function deleteParentPost(
+  userId: string,
   postId: string,
   path: string,
 ): Promise<void> {
@@ -299,9 +300,9 @@ export async function deleteParentPost(
       { $pull: { posts: { $in: descendantPostIds } } },
     );
 
-    // Remove deleted posts from the user's bookmarks array
-    await User.updateMany(
-      { bookmarks: { $in: descendantPostIds } },
+    // Remove deleted posts from the user bookmarks array
+    await User.updateOne(
+      { _id: userId },
       { $pull: { bookmarks: { $in: descendantPostIds } } },
     );
 

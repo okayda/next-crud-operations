@@ -39,7 +39,7 @@ export default function DeletePost({
 
         if (!isComment) {
           // delete booksmarks already handled by the deleteParentPost
-          await deleteParentPost(parsePostId, pathname);
+          await deleteParentPost(parseUserId, parsePostId, pathname);
 
           if (pathname.split("/").includes("post")) router.push("/");
         } else {
