@@ -18,7 +18,7 @@ export default function Bookmark({
   isBookmark: boolean;
 }) {
   const pathname = usePathname();
-  const [isBookmarking, setIsBookmarking] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const parsePostId = JSON.parse(postId);
   const parseCurrentUserId = JSON.parse(currentUserId);
@@ -27,20 +27,24 @@ export default function Bookmark({
     <Button
       variant="outline"
       className="size-[24px] p-0"
-      disabled={isBookmarking}
+      disabled={loading}
       onClick={async () => {
-        setIsBookmarking(true);
+        setLoading(true);
 
-        if (isBookmark) {
-          await deleteBookmark(parseCurrentUserId, parsePostId, pathname);
-        } else {
-          await addBookmark(parseCurrentUserId, parsePostId, pathname);
+        try {
+          if (isBookmark) {
+            await deleteBookmark(parseCurrentUserId, parsePostId, pathname);
+          } else {
+            await addBookmark(parseCurrentUserId, parsePostId, pathname);
+          }
+        } catch (error) {
+          console.error("Failed to bookmark:", error);
+        } finally {
+          setLoading(false);
         }
-
-        setIsBookmarking(false);
       }}
     >
-      {isBookmarking ? (
+      {loading ? (
         <Loader2 width={16} height={16} className="animate-spin" />
       ) : isBookmark ? (
         <BookmarkCheck width={20} height={20} />

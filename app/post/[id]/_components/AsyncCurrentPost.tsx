@@ -47,7 +47,6 @@ export default async function AsyncCurrentPost({ postId }: { postId: string }) {
         />
       </div>
 
-      {/* Only for current User but if the current user view different user will not be shown */}
       <div className="mt-8 flex flex-col gap-8">
         {currentPost.children.map(async (comment: FetchPostByIdReturnType) => {
           const commentIsBookmark = await checkBookmark(

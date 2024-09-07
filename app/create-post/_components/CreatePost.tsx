@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { PostValidation } from "@/lib/schema/post";
 import { createPost } from "@/lib/actions/post.actions";
@@ -22,6 +23,8 @@ export default function CreatePost({ userId }: { userId: string }) {
   const router = useRouter();
   const pathname = usePathname();
 
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof PostValidation>>({
     resolver: zodResolver(PostValidation),
 
@@ -32,13 +35,23 @@ export default function CreatePost({ userId }: { userId: string }) {
   });
 
   const onSubmit = async (values: z.infer<typeof PostValidation>) => {
-    await createPost({
-      text: values.post,
-      author: userId,
-      path: pathname,
-    });
+    setLoading(true);
 
-    router.push("/");
+    try {
+      await createPost({
+        text: values.post,
+        author: userId,
+        path: pathname,
+      });
+
+      router.push("/");
+
+      form.reset();
+    } catch (error) {
+      console.error("Failed to create post:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,7 +74,9 @@ export default function CreatePost({ userId }: { userId: string }) {
           )}
         />
 
-        <Button type="submit">Post</Button>
+        <Button type="submit" disabled={loading}>
+          {loading ? "Posting..." : "Post"}
+        </Button>
       </form>
     </Form>
   );

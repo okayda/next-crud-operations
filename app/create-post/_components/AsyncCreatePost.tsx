@@ -4,15 +4,11 @@ import { fetchUser } from "@/lib/actions/user.actions";
 import CreatePost from "./CreatePost";
 
 export default async function AsyncCreatePost() {
-  const user = await currentUser();
+  const getCurrentUser = await currentUser();
+  if (!getCurrentUser) return null;
 
-  if (!user) return null;
+  const currentUserInfo = await fetchUser(getCurrentUser.id);
+  if (!currentUserInfo?.onboarded) redirect("/onboarding");
 
-  const userInfo = await fetchUser(user.id);
-
-  if (!userInfo?.onboarded) redirect("/onboarding");
-
-  const userId = userInfo._id;
-
-  return <CreatePost userId={String(userId)} />;
+  return <CreatePost userId={String(currentUserInfo._id)} />;
 }
