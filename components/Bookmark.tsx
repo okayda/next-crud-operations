@@ -9,19 +9,19 @@ import { Button } from "./ui/button";
 import { BookmarkCheck, Loader2 } from "lucide-react";
 
 export default function Bookmark({
-  isBookmark,
-  userId,
   postId,
+  currentUserId,
+  isBookmark,
 }: {
-  isBookmark: boolean;
-  userId: string;
   postId: string;
+  currentUserId: string;
+  isBookmark: boolean;
 }) {
   const pathname = usePathname();
   const [isBookmarking, setIsBookmarking] = useState(false);
 
-  const parseUserId = JSON.parse(userId);
   const parsePostId = JSON.parse(postId);
+  const parseCurrentUserId = JSON.parse(currentUserId);
 
   return (
     <Button
@@ -32,9 +32,9 @@ export default function Bookmark({
         setIsBookmarking(true);
 
         if (isBookmark) {
-          await deleteBookmark(parseUserId, parsePostId, pathname);
+          await deleteBookmark(parseCurrentUserId, parsePostId, pathname);
         } else {
-          await addBookmark(parseUserId, parsePostId, pathname);
+          await addBookmark(parseCurrentUserId, parsePostId, pathname);
         }
 
         setIsBookmarking(false);

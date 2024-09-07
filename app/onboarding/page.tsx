@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+
 import AsyncAccountProfile from "./_components/AsyncAccountProfile";
 import Loader from "@/components/Loader";
 import { Card } from "@/components/ui/card";

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { connectToDB } from "../database/mongoose";
+import Post from "../models/post.model";
 import User from "../models/user.model";
 
 export async function fetchUser(userId: string) {
@@ -12,8 +13,8 @@ export async function fetchUser(userId: string) {
     const user = await User.findOne({ id: userId });
 
     return user;
-  } catch (error: any) {
-    throw new Error(`Failed to fetch user: ${error.message}`);
+  } catch (error) {
+    throw new Error(`Failed to fetch user: ${error}`);
   }
 }
 
@@ -52,5 +53,36 @@ export async function upsertUser({
     if (path === "/profile/edit") revalidatePath(path);
   } catch (error: any) {
     throw new Error(`Failed to create/update user: ${error.message}`);
+  }
+}
+
+export async function fetchUserPosts(userId: string) {
+  try {
+    connectToDB();
+
+    const posts = await User.findOne({ id: userId }).populate({
+      path: "posts",
+      populate: [
+        {
+          path: "author",
+          model: User,
+          select: "_id id name parentId image",
+        },
+        {
+          path: "children",
+          model: Post,
+
+          populate: {
+            path: "author",
+            model: User,
+            select: "name image id",
+          },
+        },
+      ],
+    });
+
+    return posts;
+  } catch (error) {
+    throw new Error(`Error fetching user threads: ${error}`);
   }
 }

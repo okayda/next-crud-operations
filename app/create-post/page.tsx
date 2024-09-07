@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+
 import AsyncCreatePost from "./_components/AsyncCreatePost";
 import Loader from "@/components/Loader";
 

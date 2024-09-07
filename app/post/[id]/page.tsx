@@ -1,6 +1,7 @@
 import { Suspense } from "react";
+
 import Loader from "@/components/Loader";
-import AsyncPost from "./_components/AsyncPost";
+import AsyncCurrentPost from "./_components/AsyncCurrentPost";
 
 export default function page({ params }: { params: { id: string } }) {
   return (
@@ -12,7 +13,7 @@ export default function page({ params }: { params: { id: string } }) {
 
         <div className="flex flex-col gap-8">
           <Suspense fallback={<Loader />}>
-            <AsyncPost postId={params.id} />
+            <AsyncCurrentPost postId={params.id} />
           </Suspense>
         </div>
       </div>

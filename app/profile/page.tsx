@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import AsyncProfile from "./_components/AsyncProfile";
+
+import AsyncCurrentUserProfile from "./_components/AsyncCurrentUserProfile";
 import Loader from "@/components/Loader";
 
 export default function page() {
@@ -13,7 +14,7 @@ export default function page() {
         </div>
 
         <Suspense fallback={<Loader />}>
-          <AsyncProfile />
+          <AsyncCurrentUserProfile />
         </Suspense>
       </div>
     </section>

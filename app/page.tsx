@@ -1,6 +1,7 @@
-import Loader from "@/components/Loader";
 import { Suspense } from "react";
-import AsyncPost from "./_components/AsyncPost";
+
+import Loader from "@/components/Loader";
+import AsyncHomePost from "./_components/AsyncHomePost";
 
 export default function Home() {
   return (
@@ -14,7 +15,7 @@ export default function Home() {
 
         <div className="flex flex-col gap-8">
           <Suspense fallback={<Loader />}>
-            <AsyncPost />
+            <AsyncHomePost />
           </Suspense>
         </div>
       </div>

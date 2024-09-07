@@ -3,8 +3,10 @@
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Separator } from "@/components/ui/separator";
+
 import { cn } from "@/lib/utils";
+
+import { Separator } from "@/components/ui/separator";
 import { buttonVariants } from "@/components/ui/button";
 
 type Props = {
@@ -14,7 +16,12 @@ type Props = {
   bio: string;
 };
 
-export default function ProfileHeader({ name, username, imgUrl, bio }: Props) {
+export default function CurrentUserHeader({
+  name,
+  username,
+  imgUrl,
+  bio,
+}: Props) {
   const pathname = usePathname();
 
   return (

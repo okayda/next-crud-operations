@@ -2,10 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 
-import mongoose from "mongoose";
 import { connectToDB } from "../database/mongoose";
-import User from "../models/user.model";
 import Post from "../models/post.model";
+import User from "../models/user.model";
 
 type Params = {
   text: string;
@@ -22,7 +21,6 @@ export async function createPost({ text, author, path }: Params) {
       author,
     });
 
-    // Update User model
     await User.findByIdAndUpdate(author, {
       $push: { posts: createdPost._id },
     });
@@ -227,22 +225,19 @@ export async function deleteBookmark(
   revalidatePath(path);
 }
 
-export async function checkBookmark(post: FetchPostByIdReturnType) {
+export async function checkBookmark(
+  post: FetchPostByIdReturnType,
+  currentUserId: string,
+) {
   await connectToDB();
 
-  const jsonUserId = JSON.stringify(post.author._id);
-  const jsonPostId = JSON.stringify(post._id);
-
-  const parseUserId = JSON.parse(jsonUserId);
-  const parsePostId = JSON.parse(jsonPostId);
-
-  const user = await User.findById(parseUserId).select("bookmarks").exec();
+  const user = await User.findById(currentUserId).select("bookmarks").exec();
 
   if (!user) {
     throw new Error("User not found");
   }
 
-  const isBookmarked = user.bookmarks.includes(parsePostId);
+  const isBookmarked = user.bookmarks.includes(post._id);
 
   return isBookmarked;
 }
@@ -259,12 +254,7 @@ async function fetchAllChildPosts(postId: string): Promise<any[]> {
   return descendantPosts;
 }
 
-// Deleting the target post including the descendants post
-export async function deleteParentPost(
-  userId: string,
-  postId: string,
-  path: string,
-): Promise<void> {
+export async function deletePost(postId: string, path: string): Promise<void> {
   try {
     await connectToDB();
 
@@ -300,26 +290,21 @@ export async function deleteParentPost(
       { $pull: { posts: { $in: descendantPostIds } } },
     );
 
-    // Remove deleted posts from the user bookmarks array
-    await User.updateOne(
-      { _id: userId },
-      { $pull: { bookmarks: { $in: descendantPostIds } } },
-    );
+    // Fetch all users who have any of the descendant postIds in their bookmarks
+    const usersWithBookmarks = await User.find({
+      bookmarks: { $in: descendantPostIds },
+    });
+
+    if (usersWithBookmarks.length > 0) {
+      // Remove the deleted posts from all users bookmarks array
+      await User.updateMany(
+        { bookmarks: { $in: descendantPostIds } },
+        { $pull: { bookmarks: { $in: descendantPostIds } } },
+      );
+    }
 
     revalidatePath(path);
   } catch (error: any) {
     throw new Error(`Failed to delete post: ${error.message}`);
   }
-}
-
-// Deleting the target post only
-export async function deleteChildPost(
-  postId: string,
-  path: string,
-): Promise<void> {
-  await connectToDB();
-
-  await Post.deleteOne({ _id: postId });
-
-  revalidatePath(path);
 }

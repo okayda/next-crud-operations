@@ -1,33 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import {
-  deleteBookmark,
-  deleteChildPost,
-  deleteParentPost,
-} from "@/lib/actions/post.actions";
+import { usePathname } from "next/navigation";
+import { deletePost } from "@/lib/actions/post.actions";
 import { Loader2, Trash } from "lucide-react";
 import { Button } from "./ui/button";
 
-export default function DeletePost({
-  userId,
-  postId,
-  isComment,
-  isBookmark,
-}: {
-  userId: string;
-  postId: string;
-  isComment?: string;
-  isBookmark: boolean;
-}) {
-  const parseUserId = JSON.parse(userId);
-  const parsePostId = JSON.parse(postId);
-
+export default function DeletePost({ postId }: { postId: string }) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const pathname = usePathname();
-  const router = useRouter();
+
+  const parsePostId = JSON.parse(postId);
 
   return (
     <Button
@@ -37,18 +21,7 @@ export default function DeletePost({
       onClick={async () => {
         setIsDeleting(true);
 
-        if (!isComment) {
-          // delete booksmarks already handled by the deleteParentPost
-          await deleteParentPost(parseUserId, parsePostId, pathname);
-
-          if (pathname.split("/").includes("post")) router.push("/");
-        } else {
-          await deleteChildPost(parsePostId, pathname);
-
-          if (isBookmark) {
-            await deleteBookmark(parseUserId, parsePostId, pathname);
-          }
-        }
+        await deletePost(parsePostId, pathname);
 
         setIsDeleting(false);
       }}

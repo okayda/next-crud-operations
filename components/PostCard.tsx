@@ -8,33 +8,37 @@ import Bookmark from "./Bookmark";
 import { cn, formatDateString } from "@/lib/utils";
 
 type Props = {
-  postId: string;
-  isBookmark: boolean;
-  content: string;
+  postId: string; // (mongodb) _id --> ObjectId()
+  currentUserId: string; // (clerk auth) id
 
-  author: {
+  authorInfo: {
     _id?: string;
     id: string;
     name: string;
     image: string;
   };
 
+  isBookmark: boolean;
+  hasDelete: boolean;
+
+  content: string;
   createdAt: string;
 
-  comments: {
+  comments?: {
     author: {
       image: string;
     };
   }[];
-
   isComment?: boolean;
 };
 
 export default function PostCard({
   postId,
+  currentUserId,
+  authorInfo,
   isBookmark,
+  hasDelete,
   content,
-  author,
   createdAt,
   comments,
   isComment,
@@ -42,29 +46,23 @@ export default function PostCard({
   return (
     <Card className="rounded-md p-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href={`/profile/${author.id}`}>
+        <Link href={`/profile/${authorInfo.id}`}>
+          <div className="flex items-center gap-4">
             <Image
-              src={author.image}
+              src={authorInfo.image}
               alt="Profile Image"
               width={52}
               height={52}
               className="cursor-pointer rounded-full"
             />
-          </Link>
 
-          <Link href={`/profile/${author.id}`}>
             <h4 className="cursor-pointer text-[18px] font-semibold">
-              {author.name}
+              {authorInfo.name}
             </h4>
-          </Link>
-        </div>
+          </div>
+        </Link>
 
-        <DeletePost
-          isBookmark={isBookmark}
-          userId={JSON.stringify(author._id)}
-          postId={JSON.stringify(postId)}
-        />
+        {hasDelete && <DeletePost postId={JSON.stringify(postId)} />}
       </div>
 
       <p className="text-small-regular text-light-2 mt-4 border-l-4 pl-4">
@@ -84,13 +82,13 @@ export default function PostCard({
           </Link>
 
           <Bookmark
-            isBookmark={isBookmark}
-            userId={JSON.stringify(author._id)}
             postId={JSON.stringify(postId)}
+            currentUserId={JSON.stringify(currentUserId)}
+            isBookmark={isBookmark}
           />
         </div>
 
-        {isComment && comments.length > 0 && (
+        {isComment && comments && comments.length > 0 && (
           <div className="mb-1 flex items-center gap-2">
             {comments.slice(0, 2).map((comment, index) => (
               <Image
