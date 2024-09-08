@@ -1,10 +1,8 @@
 # CRUD Operations
 
-## Getting Started
-
 To run this project locally for development purposes, follow the steps below:
 
-### Prerequisites
+## Prerequisites
 
 1. **Clerk Account**: Create a [Clerk](https://clerk.com/) account and set up a project to obtain the `PUBLISHABLE_KEY` and `SECRET_KEY`.
 2. **MongoDB Account**: Sign up for [MongoDB](https://account.mongodb.com/account/login?signedOut=true) and create a database. Obtain your `MONGODB_URL` for database connection.
@@ -28,3 +26,17 @@ UPLOADTHING_APP_ID=
 ## The flow of this project
 
 ![](./crudFlow.png)
+
+## Built with
+
+- Next.js
+- Mongoose/MongoDB
+- Clerk Auth
+- Uploadthing
+- TypeScript
+- Shadcn-ui
+- TailwindCSS
+
+## Author
+
+- Created by - Jhon Queñano
