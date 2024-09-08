@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
 
 import { fetchUser } from "@/lib/actions/user.actions";
@@ -10,7 +9,6 @@ export default async function AsyncAccountProfile() {
   if (!getCurrentUser) return null;
 
   const currentUserInfo = await fetchUser(getCurrentUser.id);
-  if (!currentUserInfo?.onboarded) redirect("/onboarding");
 
   const userData = {
     id: getCurrentUser?.id,
