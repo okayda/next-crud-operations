@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserValidation } from "@/lib/schema/user";
 
+import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -28,7 +29,6 @@ import { upsertUser } from "@/lib/actions/user.actions";
 type Props = {
   user: {
     id: string;
-    objectId: string;
     username: string;
     name: string;
     bio: string;
@@ -37,9 +37,10 @@ type Props = {
 };
 
 const AccountProfile = ({ user }: Props) => {
+  const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
 
-  const { startUpload } = useUploadThing("media");
+  const { startUpload } = useUploadThing("imageUploader");
 
   const router = useRouter();
   const pathname = usePathname();
@@ -82,30 +83,39 @@ const AccountProfile = ({ user }: Props) => {
   };
 
   const onSubmit = async (values: z.infer<typeof UserValidation>) => {
+    setLoading(true);
+
     const blob = values.profile_photo;
     const hasImageChanged = isBase64Image(blob);
 
-    if (hasImageChanged) {
-      const imgRes = await startUpload(files);
+    try {
+      if (hasImageChanged) {
+        const imgRes = await startUpload(files);
 
-      if (imgRes && imgRes[0].url) {
-        values.profile_photo = imgRes[0].url;
+        if (imgRes && imgRes[0].url) {
+          values.profile_photo = imgRes[0].url;
+        }
       }
-    }
 
-    await upsertUser({
-      userId: user.id,
-      username: values.username,
-      name: values.name,
-      bio: values.bio,
-      image: values.profile_photo,
-      path: pathname,
-    });
+      await upsertUser({
+        userId: user.id,
+        username: values.username,
+        name: values.name,
+        bio: values.bio,
+        image: values.profile_photo,
+        path: pathname,
+      });
 
-    if (pathname.split("/").includes("change")) {
-      router.back();
-    } else {
-      router.push("/");
+      if (pathname.split("/").includes("change")) {
+        router.push("/profile");
+        router.refresh();
+      } else {
+        router.push("/");
+      }
+    } catch (error) {
+      console.log("Failed to submit user form: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -122,24 +132,15 @@ const AccountProfile = ({ user }: Props) => {
           render={({ field }) => (
             <FormItem className="flex items-center gap-2">
               <FormLabel>
-                {field.value ? (
+                <div className="relative size-[72px] object-cover">
                   <Image
                     src={field.value}
                     alt="profile photo"
-                    width={96}
-                    height={96}
+                    fill
                     priority
-                    className="rounded-full object-contain"
+                    className="rounded-full bg-slate-900 object-cover"
                   />
-                ) : (
-                  <Image
-                    src="/assets/profile.svg"
-                    alt="profile photo"
-                    width={24}
-                    height={24}
-                    className="object-contain"
-                  />
-                )}
+                </div>
               </FormLabel>
 
               <FormControl>
@@ -147,7 +148,7 @@ const AccountProfile = ({ user }: Props) => {
                   type="file"
                   accept="image/*"
                   placeholder="Upload a photo"
-                  className="cursor-pointer border-none bg-transparent text-base outline-none file:text-base file:font-semibold file:text-cyan-500"
+                  className="cursor-pointer border-none bg-transparent pl-0 text-base outline-none file:text-base file:font-semibold file:text-cyan-500"
                   onChange={(e) => handleImage(e, field.onChange)}
                 />
               </FormControl>
@@ -200,8 +201,18 @@ const AccountProfile = ({ user }: Props) => {
             </FormItem>
           )}
         />
-        <Button type="submit" variant="default" className="tracking-wide">
-          Submit
+
+        <Button
+          type="submit"
+          variant="default"
+          className="tracking-wide"
+          disabled={loading}
+        >
+          {loading ? (
+            <Loader2 width={18} height={18} className="animate-spin" />
+          ) : (
+            "Submit"
+          )}
         </Button>
       </form>
     </Form>

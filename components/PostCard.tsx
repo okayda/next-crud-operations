@@ -48,13 +48,14 @@ export default function PostCard({
       <div className="flex items-center justify-between">
         <Link href={`/profile/${authorInfo.id}`}>
           <div className="flex items-center gap-4">
-            <Image
-              src={authorInfo.image}
-              alt="Profile Image"
-              width={52}
-              height={52}
-              className="cursor-pointer rounded-full"
-            />
+            <div className="relative size-[52px] object-cover">
+              <Image
+                src={authorInfo.image}
+                alt="Profile Image"
+                fill
+                className="cursor-pointer rounded-full bg-slate-900 object-cover"
+              />
+            </div>
 
             <h4 className="cursor-pointer text-[18px] font-semibold">
               {authorInfo.name}
@@ -99,7 +100,7 @@ export default function PostCard({
                 height={22}
                 className={`${
                   index !== 0 && "-ml-5"
-                } rounded-full object-cover`}
+                } rounded-full bg-slate-900 object-cover`}
               />
             ))}
 

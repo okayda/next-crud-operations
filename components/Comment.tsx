@@ -102,8 +102,8 @@ export default function Comment({
           <Button
             variant="default"
             type="submit"
-            disabled={loading}
             className="font-semibold"
+            disabled={loading}
           >
             {loading ? (
               <Loader2 width={18} height={18} className="animate-spin" />

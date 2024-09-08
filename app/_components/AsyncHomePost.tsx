@@ -8,7 +8,7 @@ import PostCard from "@/components/PostCard";
 
 export default async function AsyncHomePost() {
   // All Parent posts created by the all users
-  const result = await fetchPosts(1, 30);
+  const result = await fetchPosts(1, 40);
 
   const getCurrentUser = await currentUser();
   if (!getCurrentUser) return null;

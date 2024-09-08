@@ -28,12 +28,12 @@ export default function CurrentUserHeader({
     <div className="flex w-full flex-col justify-start">
       <div className={`flex items-center justify-between`}>
         <div className="flex items-center gap-3">
-          <div className="relative h-20 w-20 object-cover">
+          <div className="relative size-[80px] object-cover">
             <Image
               src={imgUrl}
               alt=""
               fill
-              className="rounded-full object-cover shadow-2xl"
+              className="rounded-full bg-slate-900 object-cover shadow-2xl"
             />
           </div>
 
@@ -49,7 +49,7 @@ export default function CurrentUserHeader({
           href={`${pathname}/change`}
           className={cn(
             "!font-semibold",
-            buttonVariants({ variant: "secondary" }),
+            buttonVariants({ variant: "default" }),
           )}
         >
           Change

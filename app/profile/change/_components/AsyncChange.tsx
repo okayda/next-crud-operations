@@ -2,10 +2,9 @@ import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
 
 import { fetchUser } from "@/lib/actions/user.actions";
+import AccountProfile from "@/components/AccountProfile";
 
-import AccountProfile from "../../../components/AccountProfile";
-
-export default async function AsyncAccountProfile() {
+export default async function AsyncChange() {
   const getCurrentUser = await currentUser();
   if (!getCurrentUser) return null;
 

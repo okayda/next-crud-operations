@@ -62,6 +62,7 @@ export async function fetchUserPosts(userId: string) {
 
     const posts = await User.findOne({ id: userId }).populate({
       path: "posts",
+      options: { sort: { _id: -1 } },
       populate: [
         {
           path: "author",
