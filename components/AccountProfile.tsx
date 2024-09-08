@@ -23,7 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
 import { isBase64Image } from "@/lib/utils";
-import { useUploadThing } from "@/lib/uploadthing";
+import { useUploadThing } from "../lib/uploadthing";
 import { upsertUser } from "@/lib/actions/user.actions";
 
 type Props = {
